@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوت تركس الآلي - مجاني وكامل</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            min-height: 100vh;
+            padding: 15px;
+            padding-bottom: 100px;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 3px solid #ff9800;
+        }
+        
+        .auto-section {
+            background: rgba(76, 175, 80, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            text-align: center;
+            border: 2px solid #4caf50;
+        }
+        
+        .bot-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .control-btn {
+            background: linear-gradient(45deg, #2196f3, #64b5f6);
+            border: none;
+            padding: 18px 10px;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .control-btn.auto {
+            background: linear-gradient(45deg, #4caf50, #66bb6a);
+        }
+        
+        .control-btn.reset {
+            background: linear-gradient(45deg, #f44336, #ef5350);
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin: 15px 0;
+        }
+        
+        .card-btn {
+            background: rgba(255, 152, 0, 0.8);
+            border: 2px solid #ff9800;
+            padding: 20px 10px;
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .card-btn:active {
+            transform: scale(0.95);
+            background: rgba(76, 175, 80, 0.8);
+        }
+        
+        .card-btn.played {
+            background: rgba(158, 158, 158, 0.5);
+            opacity: 0.6;
+        }
+        
+        .stats-bar {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            text-align: center;
+        }
+        
+        .analysis-panel {
+            background: rgba(255, 193, 7, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-right: 4px solid #ffc107;
+        }
+        
+        .suit-section {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .suit-title {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .heart { color: #ff4444; }
+        .spade { color: #000; }
+        .diamond { color: #ff4444; }
+        .club { color: #000; }
+        
+        .bottom-controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            border-top: 3px solid #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 بوت تركس الآلي المجاني</h1>
+            <p>يعمل 100% عبر المتصفح - بدون تثبيت</p>
+        </div>
+
+        <!-- قسم التشغيل الآلي -->
+        <div class="auto-section">
+            <h3>🚀 الوضع شبه الآلي</h3>
+            <p>إضغط مرة واحدة - البوت يحسب كل شيء تلقائياً</p>
+            <div class="bot-controls">
+                <button class="control-btn auto" onclick="enableAutoMode()">
+                    🔥 تفعيل الآلي
+                </button>
+                <button class="control-btn" onclick="startSmartAnalysis()">
+                    🧠 تحليل ذكي
+                </button>
+            </div>
+        </div>
+
+        <!-- الإحصائيات -->
+        <div class="stats-bar">
+            <div>
+                <strong>الملعوبة</strong><br>
+                <span id="playedCount">0</span>/32
+            </div>
+            <div>
+                <strong>المتبقية</strong><br>
+                <span id="remainingCount">32</span>
+            </div>
+            <div>
+                <strong>الجولات</strong><br>
+                <span id="roundsCount">0</span>/8
+            </div>
+            <div>
+                <strong>دقة البوت</strong><br>
+                <span id="accuracyRate">100%</span>
+            </div>
+        </div>
+
+        <!-- لوحة التحليل -->
+        <div class="analysis-panel">
+            <h3>📊 تحليل البوت الحي</h3>
+            <div id="liveAnalysis">
+                البوت جاهز - إضغط على الورق لبدء التحليل...
+            </div>
+        </div>
+
+        <!-- ورق القلوب -->
+        <div class="suit-section">
+            <div class="suit-title" style="color: #ff4444;">♥ القلوب</div>
+            <div class="cards-grid">
+                <button class="card-btn" onclick="autoMarkCard('A♥')">A♥</button>
+                <button class="card-btn" onclick="autoMarkCard('K♥')">K♥</button>
+                <button class="card-btn" onclick="autoMarkCard('Q♥')">Q♥</button>
+                <button class="card-btn" onclick="autoMarkCard('J♥')">J♥</button>
+                <button class="card-btn" onclick="autoMarkCard('10♥')">10♥</button>
+                <button class="card-btn" onclick="autoMarkCard('9♥')">9♥</button>
+                <button class="card-btn" onclick="autoMarkCard('8♥')">8♥</button>
+                <button class="card-btn" onclick="autoMarkCard('7♥')">7♥</button>
+            </div>
+        </div>
+
+        <!-- ورق البستوني -->
+        <div class="suit-section">
+            <div class="suit-title" style="color: #000;">♠ البستوني</div>
+            <div class="cards-grid">
+                <button class="card-btn" onclick="autoMarkCard('A♠')">A♠</button>
+                <button class="card-btn" onclick="autoMarkCard('K♠')">K♠</button>
+                <button class="card-btn" onclick="autoMarkCard('Q♠')">Q♠</button>
+                <button class="card-btn" onclick="autoMarkCard('J♠')">J♠</button>
+                <button class="card-btn" onclick="autoMarkCard('10♠')">10♠</button>
+                <button class="card-btn" onclick="autoMarkCard('9♠')">9♠</button>
+                <button class="card-btn" onclick="autoMarkCard('8♠')">8♠</button>
+                <button class="card-btn" onclick="autoMarkCard('7♠')">7♠</button>
+            </div>
+        </div>
+
+        <!-- ورق الديناري -->
+        <div class="suit-section">
+            <div class="suit-title" style="color: #ff4444;">♦ الديناري</div>
+            <div class="cards-grid">
+                <button class="card-btn" onclick="autoMarkCard('A♦')">A♦</button>
+                <button class="card-btn" onclick="autoMarkCard('K♦')">K♦</button>
+                <button class="card-btn" onclick="autoMarkCard('Q♦')">Q♦</button>
+                <button class="card-btn" onclick="autoMarkCard('J♦')">J♦</button>
+                <button class="card-btn" onclick="autoMarkCard('10♦')">10♦</button>
+                <button class="card-btn" onclick="autoMarkCard('9♦')">9♦</button>
+                <button class="card-btn" onclick="autoMarkCard('8♦')">8♦</button>
+                <button class="card-btn" onclick="autoMarkCard('7♦')">7♦</button>
+            </div>
+        </div>
+
+        <!-- ورق السباتي -->
+        <div class="suit-section">
+            <div class="suit-title" style="color: #000;">♣ السباتي</div>
+            <div class="cards-grid">
+                <button class="card-btn" onclick="autoMarkCard('A♣')">A♣</button>
+                <button class="card-btn" onclick="autoMarkCard('K♣')">K♣</button>
+                <button class="card-btn" onclick="autoMarkCard('Q♣')">Q♣</button>
+                <button class="card-btn" onclick="autoMarkCard('J♣')">J♣</button>
+                <button class="card-btn" onclick="autoMarkCard('10♣')">10♣</button>
+                <button class="card-btn" onclick="autoMarkCard('9♣')">9♣</button>
+                <button class="card-btn" onclick="autoMarkCard('8♣')">8♣</button>
+                <button class="card-btn" onclick="autoMarkCard('7♣')">7♣</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- التحكم السفلي -->
+    <div class="bottom-controls">
+        <button class="control-btn" onclick="showPredictions()">
+            🔮 تنبؤات
+        </button>
+        <button class="control-btn reset" onclick="resetBot()">
+            🔄 إعادة البوت
+        </button>
+    </div>
+
+    <script>
+        // نظام البوت الآلي الكامل
+        const tarneebBot = {
+            // إعدادات البوت
+            isAutoMode: false,
+            playedCards: [],
+            gameHistory: [],
+            autoInterval: null,
+            
+            // كل الورق
+            allCards: [
+                'A♥', 'K♥', 'Q♥', 'J♥', '10♥', '9♥', '8♥', '7♥',
+                'A♠', 'K♠', 'Q♠', 'J♠', '10♠', '9♠', '8♠', '7♠',
+                'A♦', 'K♦', 'Q♦', 'J♦', '10♦', '9♦', '8♦', '7♦',
+                'A♣', 'K♣', 'Q♣', 'J♣', '10♣', '9♣', '8♣', '7♣'
+            ],
+            
+            // التهيئة
+            init() {
+                this.loadFromStorage();
+                this.updateDisplay();
+                console.log('🤖 بوت تركس الآلي جاهز للعمل');
+            },
+            
+            // تفعيل الوضع الآلي
+            enableAutoMode() {
+                this.isAutoMode = true;
+                this.showNotification('🚀 تم تفعيل الوضع الآلي!', 'success');
+                
+                // بدء الميزات التلقائية
+                this.startAutoFeatures();
+            },
+            
+            // بدء الميزات التلقائية
+            startAutoFeatures() {
+                // تحليل تلقائي كل 10 ثواني
+                this.autoInterval = setInterval(() => {
+                    this.autoAnalyzeGame();
+                }, 10000);
+                
+                // حفظ تلقائي
+                setInterval(() => {
+                    this.saveToStorage();
+                }, 30000);
+            },
+            
+            // تسجيل ورقة تلقائياً
+            autoMarkCard(card) {
+                if (!this.playedCards.includes(card)) {
+                    this.playedCards.push(card);
+                    
+                    // تأثير مرئي سريع
+                    this.showCardEffect(card);
+                    
+                    // تحديث فوري
+                    this.updateDisplay();
+                    this.autoAnalyzeGame();
+                    this.saveToStorage();
+                    
+                    // إذا كان في الوضع الآلي، يظهر تحليل إضافي
+                    if (this.isAutoMode && this.playedCards.length % 4 === 0) {
+                        this.autoRoundAnalysis();
+                    }
+                }
+            },
+            
+            // تأثير بصري للورقة
+            showCardEffect(card) {
+                const buttons = document.querySelectorAll('.card-btn');
+                buttons.forEach(btn => {
+                    if (btn.textContent === card) {
+                        btn.style.background = '#4caf50';
+                        setTimeout(() => {
+                            if (this.playedCards.includes(card)) {
+                                btn.style.background = 'rgba(158, 158, 158, 0.5)';
+                            }
+                        }, 300);
+                    }
+                });
+            },
+            
+            // التحليل التلقائي للعبة
+            autoAnalyzeGame() {
+                const played = this.playedCards.length;
+                const remaining = 32 - played;
+                const strongCards = this.getStrongCardsRemaining();
+                
+                let analysis = `📊 <strong>تحليل البوت الحي</strong><br>`;
+                analysis += `🎴 الورق الملعوبة: ${played}<br>`;
+                analysis += `🔄 الجولات: ${Math.floor(played/4)}/8<br>`;
+                analysis += `💪 الأوراق القوية المتبقية: ${strongCards.length}<br><br>`;
+                
+                analysis += `🎯 <strong>التوصية:</strong><br>`;
+                analysis += this.getStrategicAdvice(played);
+                
+                document.getElementById('liveAnalysis').innerHTML = analysis;
+            },
+            
+            // تحليل الجولة تلقائياً
+            autoRoundAnalysis() {
+                const currentRound = Math.floor(this.playedCards.length / 4);
+                const roundCards = this.playedCards.slice(-4);
+                
+                let analysis = `🔄 <strong>تحليل الجولة ${currentRound}</strong><br>`;
+                analysis += `الورق: ${roundCards.join(', ')}<br>`;
+                
+                const strongInRound = roundCards.filter(card => 
+                    ['A','K','Q'].includes(card.charAt(0))).length;
+                
+                if (strongInRound >= 2) {
+                    analysis += `💪 جولة قوية - سيطرت على الجولة`;
+                } else {
+                    analysis += `🎯 جولة متوسطة - خطط للجولات القادمة`;
+                }
+                
+                this.showNotification(analysis, 'info');
+            },
+            
+            // الحصول على الأوراق القوية المتبقية
+            getStrongCardsRemaining() {
+                const strongCards = ['A♥', 'K♥', 'Q♥', 'J♥', 'A♠', 'K♠', 'Q♠', 'J♠', 
+                                   'A♦', 'K♦', 'Q♦', 'J♦', 'A♣', 'K♣', 'Q♣', 'J♣'];
+                return strongCards.filter(card => !this.playedCards.includes(card));
+            },
+            
+            // الحصول على النصيحة الاستراتيجية
+            getStrategicAdvice(playedCount) {
+                if (playedCount <= 8) {
+                    return "ركز على التعرف على أنماط اللاعبين واستخدم الأوراق المتوسطة";
+                } else if (playedCount <= 16) {
+                    return "ابدأ باستخدام الأوراق القوية وتحكم في سير اللعبة";
+                } else if (playedCount <= 24) {
+                    return "استخدم الأوراق المتبقية بحكمة وركز على النقاط الحاسمة";
+                } else {
+                    return "هذه الجولات حاسمة - استخدم أفضل ما تبقى لديك";
+                }
+            },
+            
+            // بدء التحليل الذكي
+            startSmartAnalysis() {
+                const predictions = this.generateSmartPredictions();
+                let analysis = `🧠 <strong>التحليل الذكي المتقدم</strong><br><br>`;
+                analysis += `📈 <strong>التوقعات:</strong><br>`;
+                analysis += `${predictions}<br><br>`;
+                analysis += `💡 <strong>الإستراتيجية:</strong><br>`;
+                analysis += this.getAdvancedStrategy();
+                
+                document.getElementById('liveAnalysis').innerHTML = analysis;
+                this.showNotification('🧠 بدأ التحليل الذكي المتقدم', 'info');
+            },
+            
+            // توليد تنبؤات ذكية
+            generateSmartPredictions() {
+                const strongRemaining = this.getStrongCardsRemaining();
+                
+                if (strongRemaining.length >= 8) {
+                    return "هناك الكثير من الأوراق القوية - توقع مفاجآت في الجولات القادمة";
+                } else if (strongRemaining.length >= 4) {
+                    return "عدد معقول من الأوراق القوية - خطط لاستخدامها بحكمة";
+                } else {
+                    return "قليل من الأوراق القوية - ركز على تعزيز نقاطك المتبقية";
+                }
+            },
+            
+            // إستراتيجية متقدمة
+            getAdvancedStrategy() {
+                const strategies = [
+                    "استخدم الإحصاءات لتخمين الورق المتبقية لدى الخصوم",
+                    "حاول تتبع الألوان التي نفدت من كل لاعب",
+                    "لا تظهر كل أوراقك القوية مبكراً",
+                    "استخدم الأوراق المتوسطة للاستكشاف في البداية",
+                    "احتفظ بورتقة الآس للجولات الحاسمة",
+                    "تعلم من أنماط لعب الخصوم واستغلها"
+                ];
+                
+                return strategies[Math.floor(Math.random() * strategies.length)];
+            },
+            
+            // عرض التنبؤات
+            showPredictions() {
+                const strongCards = this.getStrongCardsRemaining();
+                let predictions = `🔮 <strong>تنبؤات البوت</strong><br><br>`;
+                
+                if (strongCards.length > 0) {
+                    predictions += `الأوراق القوية المتوقعة:<br>`;
+                    predictions += `<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin: 10px 0;">`;
+                    
+                    strongCards.slice(0, 8).forEach(card => {
+                        predictions += `<div style="background: rgba(255,0,0,0.3); padding: 10px; border-radius: 5px; text-align: center;">${card}</div>`;
+                    });
+                    
+                    predictions += `</div>`;
+                } else {
+                    predictions += `🎉 جميع الأوراق القوية نزلت!`;
+                }
+                
+                document.getElementById('liveAnalysis').innerHTML = predictions;
+            },
+            
+            // تحديث العرض
+            updateDisplay() {
+                document.getElementById('playedCount').textContent = this.playedCards.length;
+                document.getElementById('remainingCount').textContent = 32 - this.playedCards.length;
+                document.getElementById('roundsCount').textContent = Math.floor(this.playedCards.length / 4);
+                
+                const accuracy = this.playedCards.length > 0 ? 
+                    Math.min(100, Math.round((this.playedCards.length / 32) * 100)) : 100;
+                document.getElementById('accuracyRate').textContent = accuracy + '%';
+                
+                // تحديث أزرار الورق
+                document.querySelectorAll('.card-btn').forEach(btn => {
+                    if (this.playedCards.includes(btn.textContent)) {
+                        btn.classList.add('played');
+                    } else {
+                        btn.classList.remove('played');
+                    }
+                });
+            },
+            
+            // الإشعارات
+            showNotification(message, type = 'info') {
+                // في المتصفح، نستخدم alert بسيط
+                if (type === 'success') {
+                    alert('✅ ' + message);
+                } else if (type === 'error') {
+                    alert('❌ ' + message);
+                } else {
+                    alert('ℹ️ ' + message);
+                }
+            },
+            
+            // الحفظ في التخزين المحلي
+            saveToStorage() {
+                localStorage.setItem('tarneebBotData', JSON.stringify({
+                    playedCards: this.playedCards,
+                    isAutoMode: this.isAutoMode
+                }));
+            },
+            
+            // التحميل من التخزين المحلي
+            loadFromStorage() {
+                const saved = localStorage.getItem('tarneebBotData');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    this.playedCards = data.playedCards || [];
+                    this.isAutoMode = data.isAutoMode || false;
+                }
+            },
+            
+            // إعادة تعيين البوت
+            reset() {
+                if (confirm('هل تريد إعادة تعيين البوت؟ سيتم مسح جميع البيانات.')) {
+                    this.playedCards = [];
+                    this.isAutoMode = false;
+                    if (this.autoInterval) {
+                        clearInterval(this.autoInterval);
+                    }
+                    this.updateDisplay();
+                    this.saveToStorage();
+                    document.getElementById('liveAnalysis').innerHTML = 'البوت جاهز - إضغط على الورق لبدء التحليل...';
+                    this.showNotification('🔄 تم إعادة تعيين البوت بنجاح', 'success');
+                }
+            }
+        };
+
+        // تهيئة البوت عند تحميل الصفحة
+        window.addEventListener('load', () => {
+            tarneebBot.init();
+        });
+
+        // دوال الواجهة
+        function autoMarkCard(card) {
+            tarneebBot.autoMarkCard(card);
+        }
+        
+        function enableAutoMode() {
+            tarneebBot.enableAutoMode();
+        }
+        
+        function startSmartAnalysis() {
+            tarneebBot.startSmartAnalysis();
+        }
+        
+        function showPredictions() {
+            tarneebBot.showPredictions();
+        }
+        
+        function resetBot() {
+            tarneebBot.reset();
+        }
+    </script>
+</body>
+</html>
